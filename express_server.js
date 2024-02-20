@@ -51,8 +51,7 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   let id = generateRandomString();
   urlDatabase[id] = req.body.longURL;
-  const templateVars = { id: id, longURL: req.body.longURL};
-  res.render("urls_show", templateVars);
+  res.redirect(`/u/${id}`);
 });
 
 // renders single url based on id request url
@@ -61,6 +60,7 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// redirects to long url
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
