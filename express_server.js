@@ -66,6 +66,18 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
+// redirects to URL page when edit is clicekd 
+app.post("/urls/:id", (req, res) => {
+  res.redirect(`/urls/${req.params.id}`);
+});
+
+// Post route to replace longURL with new one provided
+app.post("/urls/:id/update", (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL;
+  res.redirect("/urls");
+});
+
+// deletes URL from database 
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
