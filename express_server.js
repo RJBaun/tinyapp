@@ -18,9 +18,8 @@ function generateRandomString() {
     result.push(characters[Math.floor(Math.random() * characters.length)]);
   }
   return (result.join(''));
-}
+};
 
-generateRandomString();
 
 // main paige end point
 app.get("/", (req, res) => {
@@ -50,14 +49,21 @@ app.get("/urls/new", (req, res) => {
 
 // posts data provided in form above
 app.post("/urls", (req, res) => {
-  console.log(req.body); 
-  res.send("Ok"); 
+  let id = generateRandomString();
+  urlDatabase[id] = req.body.longURL;
+  const templateVars = { id: id, longURL: req.body.longURL};
+  res.render("urls_show", templateVars);
 });
 
 // renders single url based on id request url
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars);
+});
+
+app.get("/u/:id", (req, res) => {
+  const longURL = urlDatabase[req.params.id];
+  res.redirect(longURL);
 });
 
 
