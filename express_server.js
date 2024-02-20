@@ -23,7 +23,7 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const urlVars = {urls: urlDatabase}
-  res.render("ulrs_index", urlVars);
+  res.render("urls_index", urlVars);
 });
 
 app.listen(PORT, () => {
