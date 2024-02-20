@@ -51,7 +51,7 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   let id = generateRandomString();
   urlDatabase[id] = req.body.longURL;
-  res.redirect(`/u/${id}`);
+  res.redirect(`/urls/${id}`);
 });
 
 // renders single url based on id request url
