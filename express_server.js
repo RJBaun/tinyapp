@@ -93,13 +93,24 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+// sets cookie upon login
 app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);
   res.redirect("/urls");
 });
+
+// clears cookie upon logout 
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/urls");
+});
+
+// Registers new user 
+app.get("/register", (req, res) => {
+  const templateVars = { 
+    username: req.cookies["username"],
+  };
+  res.render("register", templateVars);
 });
 
 
