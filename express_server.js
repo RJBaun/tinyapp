@@ -1,9 +1,11 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080;
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -38,13 +40,17 @@ app.get("/hello", (req, res) => {
 
 // renders urls_database
 app.get("/urls", (req, res) => {
-  const urlVars = {urls: urlDatabase}
-  res.render("urls_index", urlVars);
+  const templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  }
+  res.render("urls_index", templateVars);
 });
 
 // endpoint for rendering new urls template
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  templateVars = { username: req.cookies["username"]};
+  res.render("urls_new", templateVars);
 });
 
 // posts data provided in form above
@@ -56,7 +62,11 @@ app.post("/urls", (req, res) => {
 
 // renders single url based on id request url
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
+  const templateVars = { 
+    id: req.params.id, 
+    longURL: urlDatabase[req.params.id],
+    username: req.cookies["username"] 
+  };
   res.render("urls_show", templateVars);
 });
 
