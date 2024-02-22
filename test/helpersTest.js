@@ -1,5 +1,5 @@
 const assert = require('chai').assert;
-const { userLookup, urlsForUser } = require('../helpers');
+const { getUserByEmail, urlsForUser } = require('../helpers');
 
 const testUsers = {
   "userRandomID": {
@@ -15,14 +15,14 @@ const testUsers = {
 };
 
 
-describe('userLookup', () => {
+describe('getUserByEmail', () => {
   it('should return a user with valid email', function() {
-    const user = userLookup(testUsers, "user@example.com")
+    const user = getUserByEmail(testUsers, "user@example.com")
     const expectedUserID = testUsers["userRandomID"];
     assert.equal(user, expectedUserID);
   });
   it('should return undefined if user email does not exist', function() {
-    const user = userLookup(testUsers, "userfdgsdf@example.com")
+    const user = getUserByEmail(testUsers, "userfdgsdf@example.com")
     const expectedUserID = undefined;
     assert.equal(user, expectedUserID);
   });

@@ -2,7 +2,7 @@ const express = require('express');
 const cookieSession = require('cookie-session');
 const { Template } = require('ejs');
 const bcrypt = require('bcryptjs');
-const { userLookup, urlsForUser} = require('./helpers');
+const { getUserByEmail, urlsForUser} = require('./helpers');
 const salt = bcrypt.genSaltSync(10);
 const app = express();
 const PORT = 8080;
@@ -29,26 +29,6 @@ const generateRandomString = function() {
   }
   return (result.join(''));
 }
-
-// // lookup user in database
-// const userLookup = (email) => {
-//   for (const user in users) {
-//     if (users[user].email === email) {
-//       return true;
-//     }
-//   }
-//   return false;
-// };
-
-// const urlsForUser = (user) => {
-//   const userURLs = {};
-//   for (const id in urlDatabase) {
-//     if (urlDatabase[id].userID === user) {
-//       userURLs[id] = urlDatabase[id];
-//     }
-//   }
-//   return userURLs;
-// };
 
 
 // main paige end point
@@ -198,7 +178,7 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   if (req.body.email && req.body.password) {
-    if (!userLookup(users, req.body.email)) {
+    if (!getUserByEmail(users, req.body.email)) {
       const userID = generateRandomString();
       users[userID] = {
         id: userID,

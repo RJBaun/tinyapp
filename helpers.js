@@ -1,5 +1,5 @@
 // lookup user in database
-const userLookup = (users, email) => {
+const getUserByEmail = (users, email) => {
   for (const user in users) {
     if (users[user].email === email) {
       return users[user];
@@ -18,4 +18,4 @@ const urlsForUser = (db, user) => {
   return userURLs;
 };
 
-module.exports = { userLookup, urlsForUser };
+module.exports = { getUserByEmail, urlsForUser };
