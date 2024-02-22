@@ -1,5 +1,6 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const { Template } = require('ejs');
 const app = express();
 const PORT = 8080;
 
@@ -168,6 +169,13 @@ app.post("/register", (req, res) => {
     res.send(res.statusCode = 400);
   }
 });
+
+app.get("/login", (req, res) => {
+  const templateVars = {
+    user: users[req.cookies["user_id"]]
+  };
+  res.render("login", templateVars);
+})
 
 
 app.listen(PORT, () => {
