@@ -2,6 +2,7 @@ const express = require('express');
 const cookieSession = require('cookie-session');
 const { Template } = require('ejs');
 const bcrypt = require('bcryptjs');
+const { userLookup, urlsForUser} = require('./helpers');
 const salt = bcrypt.genSaltSync(10);
 const app = express();
 const PORT = 8080;
@@ -17,11 +18,10 @@ const urlDatabase = {};
 
 
 // User database
-const users = {
-};
+const users = {};
 
 // creates random ID
-function generateRandomString() {
+const generateRandomString = function() {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = [];
   while (result.length < 6) {
@@ -30,25 +30,25 @@ function generateRandomString() {
   return (result.join(''));
 }
 
-// lookup user in database
-const userLookup = (email) => {
-  for (const user in users) {
-    if (users[user].email === email) {
-      return true;
-    }
-  }
-  return false;
-};
+// // lookup user in database
+// const userLookup = (email) => {
+//   for (const user in users) {
+//     if (users[user].email === email) {
+//       return true;
+//     }
+//   }
+//   return false;
+// };
 
-const urlsForUser = (user) => {
-  const userURLs = {};
-  for (const id in urlDatabase) {
-    if (urlDatabase[id].userID === user) {
-      userURLs[id] = urlDatabase[id];
-    }
-  }
-  return userURLs;
-};
+// const urlsForUser = (user) => {
+//   const userURLs = {};
+//   for (const id in urlDatabase) {
+//     if (urlDatabase[id].userID === user) {
+//       userURLs[id] = urlDatabase[id];
+//     }
+//   }
+//   return userURLs;
+// };
 
 
 // main paige end point
@@ -68,11 +68,14 @@ app.get("/hello", (req, res) => {
 
 // renders urls_database
 app.get("/urls", (req, res) => {
+  console.log(req.session.user_id)
+  console.log(urlDatabase)
   const userProfile = users[req.session.user_id];
   const templateVars = {
-    urls: urlsForUser(req.session.user_id),
+    urls: urlsForUser(urlDatabase, req.session.user_id),
     user: userProfile
   };
+  console.log(templateVars)
   if (req.session.user_id) {
     res.render("urls_index", templateVars);
   } else {
@@ -195,7 +198,7 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   if (req.body.email && req.body.password) {
-    if (!userLookup(req.body.email)) {
+    if (!userLookup(users, req.body.email)) {
       const userID = generateRandomString();
       users[userID] = {
         id: userID,
