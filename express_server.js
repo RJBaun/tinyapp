@@ -1,6 +1,8 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const { Template } = require('ejs');
+const bcrypt = require('bcryptjs');
+const salt = bcrypt.genSaltSync(10);
 const app = express();
 const PORT = 8080;
 
@@ -25,12 +27,12 @@ const users = {
   AtG8yF: {
     id: "AtG8yF",
     email: "user1@example.com",
-    password: "password1"
+    password: bcrypt.hashSync("password1", salt)
   },
   jY2p0C: {
     id: "jY2p0C",
     email: "user2@example.com",
-    password: "password2"
+    password: bcrypt.hashSync("password2", salt)
   }
 };
 
@@ -181,7 +183,7 @@ app.post("/login", (req, res) => {
       userID = users[user].id;
     }
   }
-  if (userID && users[userID].password === req.body.password) {
+  if (userID && bcrypt.compareSync(req.body.password, users[userID].password)) {
     res.cookie("user_id", userID);
     res.redirect("/urls");
   } else {
@@ -214,7 +216,7 @@ app.post("/register", (req, res) => {
       users[userID] = {
         id: userID,
         email: req.body.email,
-        password: req.body.password
+        password: bcrypt.hashSync(req.body.password, salt)
       };
       res.cookie("user_id", userID);
       res.redirect("/urls");
