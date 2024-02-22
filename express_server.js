@@ -71,21 +71,28 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     user: userProfile
   }
-  console.log(templateVars);
   res.render("urls_index", templateVars);
 });
 
 // endpoint for rendering new urls template
 app.get("/urls/new", (req, res) => {
-  templateVars = { user: users[req.cookies["user_id"]]};
-  res.render("urls_new", templateVars);
+  if (req.cookies["user_id"]) {
+    const templateVars = { user: users[req.cookies["user_id"]]};
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login")
+  }
 });
 
 // posts data provided in form above
 app.post("/urls", (req, res) => {
-  let id = generateRandomString();
-  urlDatabase[id] = req.body.longURL;
-  res.redirect(`/urls/${id}`);
+  if (req.cookies["user_id"]) {
+    let id = generateRandomString();
+    urlDatabase[id] = req.body.longURL;
+    res.redirect(`/urls/${id}`);
+  } else {
+    res.send("User must be logged in to shorten URLs")
+  }
 });
 
 // renders single url based on id request url
@@ -101,7 +108,11 @@ app.get("/urls/:id", (req, res) => {
 // redirects to long url
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
-  res.redirect(longURL);
+  if (longURL) {
+    res.redirect(longURL);
+  } else {
+    res.status(404).send("Page not found")
+  }
 });
 
 // redirects to URL page when edit is clicekd 
@@ -133,7 +144,7 @@ app.post("/login", (req, res) => {
     res.cookie("user_id", userID);
     res.redirect("/urls");
   } else {
-    res.send(res.statusCode = 403, "User email or password is incorrect");
+    res.status(403).send("User email or password is incorrect");
   }
 });
 
@@ -145,10 +156,14 @@ app.post("/logout", (req, res) => {
 
 // Registers new user 
 app.get("/register", (req, res) => {
-  const templateVars = { 
-    user: users[req.cookies["user_id"]],
-  };
-  res.render("register", templateVars);
+  if (!req.cookies["user_id"]) {
+    const templateVars = { 
+      user: users[req.cookies["user_id"]],
+    };
+    res.render("register", templateVars);
+  } else {
+    res.redirect("/urls");
+  }
 });
 
 app.post("/register", (req, res) => {
@@ -163,19 +178,23 @@ app.post("/register", (req, res) => {
   res.cookie("user_id", userID);
   res.redirect("/urls")
     } else {
-      res.send(res.statusCode = 400, "Account already exists");
+      res.status(400).send("Account already exists");
     }
   } else {
-    res.send(res.statusCode = 400, "Please enter a valid email and password");
+    res.status(400).send("Please enter a valid email and password");
   }
 });
 
 app.get("/login", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]]
-  };
-  res.render("login", templateVars);
-})
+  if (!req.cookies["user_id"]) {
+    const templateVars = {
+      user: users[req.cookies["user_id"]]
+    };
+    res.render("login", templateVars);
+  } else {
+    res.redirect("/urls");
+  }
+});
 
 
 app.listen(PORT, () => {
