@@ -129,18 +129,18 @@ app.post("/login", (req, res) => {
       userID = users[user].id;
     }
   }
-  if (userID) {
+  if (userID && users[userID].password === req.body.password) {
     res.cookie("user_id", userID);
     res.redirect("/urls");
   } else {
-    res.redirect("/register");
+    res.send(res.statusCode = 403, "User email or password is incorrect");
   }
 });
 
 // clears cookie upon logout 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 // Registers new user 
@@ -163,10 +163,10 @@ app.post("/register", (req, res) => {
   res.cookie("user_id", userID);
   res.redirect("/urls")
     } else {
-      res.send(res.statusCode = 400);
+      res.send(res.statusCode = 400, "Account already exists");
     }
   } else {
-    res.send(res.statusCode = 400);
+    res.send(res.statusCode = 400, "Please enter a valid email and password");
   }
 });
 
