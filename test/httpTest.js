@@ -36,22 +36,23 @@ describe('Access Control Tests', () => {
   it('should redirect GET request to "/" to "/login" with status code 302', () => {
     return agent
       .get('/')
-      .redirects(1)
+      .redirects(0) 
       .then(res => {
+        //console.log(res)
         expect(res).to.redirect;
         expect(res).to.have.status(302);
-        expect(res).to.redirectTo('http://localhost:8080/login');
+        expect(res).to.redirectTo('/login');
       });
   });
 
   it('should redirect GET request to "/urls/new" to "/login" with status code 302', () => {
     return agent
       .get('/urls/new')
-      .redirects(1)
+      .redirects(0)
       .then(res => {
         expect(res).to.redirect;
         expect(res).to.have.status(302);
-        expect(res).to.redirectTo('http://localhost:8080/login');
+        expect(res).to.redirectTo('/login');
       });
   });
 

@@ -43,7 +43,7 @@ const generateRandomString = function() {
 
 // main paige end point
 app.get("/", (req, res) => {
-  res.redirect(302, "/login");
+  res.status(302).redirect("/login");
 });
 
 // returns url database as a JSON string
