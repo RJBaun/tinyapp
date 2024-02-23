@@ -1,5 +1,5 @@
 const assert = require('chai').assert;
-const { getUserByEmail, urlsForUser } = require('../helpers');
+const { getUserByEmail } = require('../helpers');
 
 const testUsers = {
   "userRandomID": {
@@ -13,7 +13,6 @@ const testUsers = {
     password: "dishwasher-funk"
   }
 };
-
 
 describe('getUserByEmail', () => {
   it('should return a user with valid email', function() {

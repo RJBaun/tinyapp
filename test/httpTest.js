@@ -36,7 +36,7 @@ describe('Access Control Tests', () => {
   it('should redirect GET request to "/" to "/login" with status code 302', () => {
     return agent
       .get('/')
-      .redirects(0) 
+      .redirects(0)
       .then(res => {
         //console.log(res)
         expect(res).to.redirect;

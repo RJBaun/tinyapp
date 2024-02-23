@@ -15,6 +15,7 @@ app.use(cookieSession({
   keys: ['this is my key', 'this is another key']
 }));
 
+// object of url objects
 const urlDatabase = {
   b2xVn2: {
     longURL: "http://www.lighthouselabs.ca",
@@ -25,7 +26,6 @@ const urlDatabase = {
     userID: "jY2p0C"
   }
 };
-
 
 // User database
 const users = {};
@@ -99,14 +99,14 @@ app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
     res.status(404).send('Page does not exist');
   } else if (urlDatabase[req.params.id].userID === req.session.user_id) {
-      const dataBaseURL = urlDatabase[req.params.id].longURL;
-      const templateVars = {
-        id: req.params.id,
-        longURL: dataBaseURL,
-        user: users[req.session.user_id]
-      };
-      res.render("urls_show", templateVars);
-    } else {
+    const dataBaseURL = urlDatabase[req.params.id].longURL;
+    const templateVars = {
+      id: req.params.id,
+      longURL: dataBaseURL,
+      user: users[req.session.user_id]
+    };
+    res.render("urls_show", templateVars);
+  } else {
     res.status(403).send('You do not own this URL');
   }
 });
