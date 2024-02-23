@@ -1,11 +1,11 @@
 const express = require('express');
-const cookieSession = require('cookie-session');
 const { Template } = require('ejs');
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const { getUserByEmail, urlsForUser} = require('./helpers');
 const salt = bcrypt.genSaltSync(10);
-const app = express();
 const PORT = 8080;
+const app = express();
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: false }));

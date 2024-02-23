@@ -1,8 +1,8 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
+chai.use(chaiHttp);
 const expect = chai.expect;
 
-chai.use(chaiHttp);
 
 describe("Register, Login, and Access Control Test", () => {
   const agent = chai.request.agent("http://localhost:8080");
@@ -39,7 +39,7 @@ describe('Access Control Tests', () => {
       .redirects(1)
       .then(res => {
         expect(res).to.redirect;
-        expect(res).to.have.status(200);
+        expect(res).to.have.status(302);
         expect(res).to.redirectTo('http://localhost:8080/login');
       });
   });
@@ -50,7 +50,7 @@ describe('Access Control Tests', () => {
       .redirects(1)
       .then(res => {
         expect(res).to.redirect;
-        expect(res).to.have.status(200);
+        expect(res).to.have.status(302);
         expect(res).to.redirectTo('http://localhost:8080/login');
       });
   });
