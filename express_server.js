@@ -8,13 +8,23 @@ const app = express();
 const PORT = 8080;
 
 app.set('view engine', 'ejs');
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(cookieSession({
   name: 'session',
   keys: ['this is my key', 'this is another key']
 }));
 
-const urlDatabase = {};
+const urlDatabase = {
+  b2xVn2: {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "AtG8yF"
+  },
+  Psm5xK: {
+    longURL: "http://www.google.com",
+    userID: "jY2p0C"
+  }
+};
 
 
 // User database
@@ -28,12 +38,12 @@ const generateRandomString = function() {
     result.push(characters[Math.floor(Math.random() * characters.length)]);
   }
   return (result.join(''));
-}
+};
 
 
 // main paige end point
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect(302, "/login");
 });
 
 // returns url database as a JSON string
@@ -48,14 +58,11 @@ app.get("/hello", (req, res) => {
 
 // renders urls_database
 app.get("/urls", (req, res) => {
-  console.log(req.session.user_id)
-  console.log(urlDatabase)
   const userProfile = users[req.session.user_id];
   const templateVars = {
     urls: urlsForUser(urlDatabase, req.session.user_id),
     user: userProfile
   };
-  console.log(templateVars)
   if (req.session.user_id) {
     res.render("urls_index", templateVars);
   } else {
@@ -65,11 +72,11 @@ app.get("/urls", (req, res) => {
 
 // endpoint for rendering new urls template
 app.get("/urls/new", (req, res) => {
-  const templateVars = { user: users[req.session.user_id]};
-  if (req.session.user_id) {
-    res.render("urls_new", templateVars);
+  if (!req.session.user_id) {
+    res.redirect(302, "/login");
   } else {
-    res.render("login_prompt", templateVars);
+    const templateVars = { user: users[req.session.user_id]};
+    res.render("urls_new", templateVars);
   }
 });
 
@@ -89,17 +96,18 @@ app.post("/urls", (req, res) => {
 
 // renders single url based on id request url
 app.get("/urls/:id", (req, res) => {
-  const id = req.params.id;
-  console.log(urlDatabase[id].userID);
-  const templateVars = {
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    user: users[req.session.user_id]
-  };
-  if (urlDatabase[id].userID === req.session.user_id) {
-    res.render("urls_show", templateVars);
-  } else {
-    res.render("urls_not_owned", templateVars);
+  if (!urlDatabase[req.params.id]) {
+    res.status(404).send('Page does not exist');
+  } else if (urlDatabase[req.params.id].userID === req.session.user_id) {
+      const dataBaseURL = urlDatabase[req.params.id].longURL;
+      const templateVars = {
+        id: req.params.id,
+        longURL: dataBaseURL,
+        user: users[req.session.user_id]
+      };
+      res.render("urls_show", templateVars);
+    } else {
+    res.status(403).send('You do not own this URL');
   }
 });
 
@@ -144,12 +152,8 @@ app.post("/urls/:id/delete", (req, res) => {
 
 // sets cookie upon login
 app.post("/login", (req, res) => {
-  let userID;
-  for (const user in users) {
-    if (users[user].email === req.body.email) {
-      userID = users[user].id;
-    }
-  }
+  let userProfile = getUserByEmail(users, req.body.email);
+  userID = userProfile.id;
   if (userID && bcrypt.compareSync(req.body.password, users[userID].password)) {
     req.session.user_id = userID;
     res.redirect("/urls");
@@ -177,7 +181,7 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  if (req.body.email && req.body.password) {
+  if (req.body.email.trim() && req.body.password.trim()) {
     if (!getUserByEmail(users, req.body.email)) {
       const userID = generateRandomString();
       users[userID] = {

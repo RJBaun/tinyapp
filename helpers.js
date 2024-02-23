@@ -5,7 +5,6 @@ const getUserByEmail = (users, email) => {
       return users[user];
     }
   }
-  return undefined;
 };
 
 const urlsForUser = (db, user) => {
